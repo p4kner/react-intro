@@ -20,13 +20,12 @@ class Board extends React.Component {
       };
   }
 
-  handleClick(i){
+  handleClick(i) {
     const squares = this.state.squares.slice();
-    if(this.state.xIsNext){
-      squares[i] = 'X';
-    }else{
-      squares[i] = '0';
+    if (calculateWinner(squares) || squares[i]) {
+      return;
     }
+    squares[i] = this.state.xIsNext ? 'X' : 'O';
     this.setState({
       squares: squares,
       xIsNext: !this.state.xIsNext,
@@ -41,7 +40,13 @@ class Board extends React.Component {
   }
 
   render() {
-    const status = 'Next player: ' + (this.state.xIsNext ? 'X': '0');
+    const winner = calculateWinner(this.state.squares);
+    let status;
+    if (winner) {
+      status = 'Winner: ' + winner;
+    } else {
+      status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+    }
 
     return (
       <div>
@@ -80,6 +85,35 @@ class Game extends React.Component {
       </div>
     );
   }
+}
+
+/**
+* Determines if there are three equal symbols in a row and returns winner.
+*
+* Checks if there are three symbols in a row (horizontal, vertical, diagonal).
+* Depending on which symbol this is, a winner is returned
+*
+*@param   squares
+*@return
+*/
+function calculateWinner(squares) {
+  const lines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
+  for (let i = 0; i < lines.length; i++) {
+    const [a, b, c] = lines[i];
+    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+      return squares[a];
+    }
+  }
+  return null;
 }
 
 // ========================================
